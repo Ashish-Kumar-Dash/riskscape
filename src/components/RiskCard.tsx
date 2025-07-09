@@ -15,19 +15,25 @@ export default function RiskCard({ data }: Props) {
 
       {air && (
         <div>
-          <p className="text-sm font-medium">Air Quality Index: {air.aqi}</p>
-          <p className="text-sm text-gray-600">Category: {air.category}</p>
+          <p className="text-sm font-medium">Air Quality Index: {air.aqi || "N/A"}</p>
+          <p className="text-sm text-gray-600">Category: {air.category || "N/A"}</p>
         </div>
       )}
 
       {solar && (
         <div className="mt-2">
-          <p className="text-sm font-medium">
-            Solar Potential: {solar?.maxSunshineHoursPerYear} hours/year
-          </p>
-          <p className="text-sm text-gray-600">
-            Avg Insolation: {solar?.maxSolarRadiation?.valueKwPerM2} kWh/m²/day
-          </p>
+          {solar.message ? (
+            <p className="text-sm text-gray-600">{solar.message}</p>
+          ) : (
+            <>
+              <p className="text-sm font-medium">
+                Max Solar Panels: {solar.maxArrayPanelsCount || "N/A"}
+              </p>
+              <p className="text-sm text-gray-600">
+                Roof Area: {solar.wholeRoofStats?.areaMeters2 || "N/A"} m²
+              </p>
+            </>
+          )}
         </div>
       )}
     </div>
