@@ -3,29 +3,22 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
   const { pm25, solar, location } = await req.json();
 
-  const prompt = `
+const prompt = `
 You are an AI climate risk assessor. A user is located in ${location}.
 - PM2.5 level: ${pm25}
 - Solar output: ${solar} kWh/m²/year
 
-Determine:
-1. Risk Tier: Low / Medium / High
-2. Explanation: Short summary why this risk level is assigned
-3. Recommendations: 1–2 climate insurance products or schemes that would help small farmers or rural users in this region
+Determine the climate risk tier (Low/Medium/High), explain briefly why, and recommend 1-2 insurance product *names* (only names, no explanations) that are suitable for small farmers or rural users in such conditions.
 
-Respond strictly in valid JSON with this exact format (do not include extra comments, no nested structures):
+Respond ONLY in compact JSON like this:
 
 {
   "riskTier": "Medium",
-  "explanation": "Short reasoning here.",
-  "recommendations": [
-    "Insurance Product 1 - short description",
-    "Insurance Product 2 - short description"
-  ]
+  "explanation": "Your short explanation here...",
+  "recommendations": ["Index-based crop insurance", "Livestock weather insurance"]
 }
-
-DO NOT return objects inside 'recommendations'. Only return an array of strings as shown above. Your entire output must be a single JSON block and must be parsable with JSON.parse().
 `;
+
 
   const openrouterRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
@@ -47,10 +40,6 @@ DO NOT return objects inside 'recommendations'. Only return an array of strings 
     const parsed = JSON.parse(content);
     return NextResponse.json({ success: true, data: parsed });
   } catch {
-    return NextResponse.json({
-      success: false,
-      error: "AI response could not be parsed",
-      raw: content
-    });
+    return NextResponse.json({ success: false, error: "AI response could not be parsed", raw: content });
   }
 }
