@@ -27,10 +27,10 @@ export default function RiskCard({ data }: Props) {
           ) : (
             <>
               <p className="text-sm font-medium">
-                Max Solar Panels: {solar.maxArrayPanelsCount || "N/A"}
+                ☀️ Sunshine Hours/Year: {solar.maxSunshineHoursPerYear || "N/A"}
               </p>
               <p className="text-sm text-gray-600">
-                Roof Area: {solar.wholeRoofStats?.areaMeters2 || "N/A"} m²
+                🌡️ Avg Temperature (°C): {solar.wholeRoofStats?.areaMeters2?.toFixed(2) || "N/A"}
               </p>
             </>
           )}

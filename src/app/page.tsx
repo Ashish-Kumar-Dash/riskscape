@@ -17,44 +17,47 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState<string>('Unknown');
   const [error, setError] = useState<string | null>(null);
+const [currentLatLng, setCurrentLatLng] = useState<{ lat: number; lng: number } | null>(null);
+ const handleLocationChange = async (lat: number, lng: number) => {
+  setCurrentLatLng({ lat, lng }); 
+  try {
+    const res = await fetch(`/api/environment?lat=${lat}&lng=${lng}`);
+    const json = await res.json();
+    const data = json.solarData;
 
-  const handleLocationChange = async (lat: number, lng: number) => {
-    try {
-      const res = await fetch(`/api/environment?lat=${lat}&lng=${lng}`);
-      const json = await res.json();
-      const data = json.solarData;
-
-      if (!data) {
-        setSolarData(null);
-        setAssessment(null);
-        setError('No solar data available for this region.');
-        return;
-      }
-
-      setSolarData(data);
-      setLocation(`${data.administrativeArea}, ${data.regionCode}`);
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching solar data:', err);
-      setError('Failed to fetch solar data.');
+    if (!data) {
+      setSolarData(null);
+      setAssessment(null);
+      setError('No solar data available for this region.');
+      return;
     }
-  };
 
-  const assessRisk = async () => {
-    if (!solarData) return;
-    setLoading(true);
-    setAssessment(null);
+    setSolarData(data);
+    setLocation(json.location || "Unknown");
+    setError(null);
+  } catch (err) {
+    console.error('Error fetching solar data:', err);
+    setError('Failed to fetch solar data.');
+  }
+};
 
-    try {
-      const res = await fetch("/api/assess", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          location,
-          pm25: 95,
-          solar: solarData.solarPotential?.maxSunshineHoursPerYear ?? 0
-        })
-      });
+const assessRisk = async () => {
+  if (!solarData) return;
+  setLoading(true);
+  setAssessment(null);
+
+  try {
+    const res = await fetch("/api/assess", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        location,
+        pm25: 95,
+        solar: solarData.solarPotential?.maxSunshineHoursPerYear ?? 0,
+        avgTemp: solarData.solarPotential?.wholeRoofStats?.areaMeters2 ?? 0
+      })
+    });
+
 
       const json = await res.json();
 
@@ -107,7 +110,7 @@ if (error) {
           <p><strong>🗓️ Imagery Date:</strong> {`${solarData.imageryDate?.year}-${solarData.imageryDate?.month}-${solarData.imageryDate?.day}`}</p>
           <p><strong>☀️ Max Sunshine Hours/Year:</strong> {solarData.solarPotential?.maxSunshineHoursPerYear?.toFixed(2)}</p>
           <p><strong>🌿 Carbon Offset (kg/MWh):</strong> {solarData.solarPotential?.carbonOffsetFactorKgPerMwh}</p>
-          <p><strong>🏠 Roof Area (m²):</strong> {solarData.solarPotential?.wholeRoofStats?.areaMeters2?.toFixed(2)}</p>
+          <p><strong>🌡️ Avg Annual Temp (°C):</strong> {solarData.solarPotential?.wholeRoofStats?.areaMeters2?.toFixed(2)}</p>
 
           <button
             onClick={assessRisk}

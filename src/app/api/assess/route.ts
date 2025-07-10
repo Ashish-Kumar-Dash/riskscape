@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
-  const { pm25, solar, location } = await req.json();
+  const { pm25, solar, location, avgTemp } = await req.json();
 
 const prompt = `
 You are an AI climate risk assessor. A user is located in ${location}.
 - PM2.5 level: ${pm25}
 - Solar output: ${solar} kWh/m²/year
+- Avg Annual Temp: ${avgTemp} °C
 
 Determine the climate risk tier (Low/Medium/High), explain briefly why, and recommend 1-2 insurance product *names* (only names, no explanations) that are suitable for small farmers or rural users in such conditions.
 
