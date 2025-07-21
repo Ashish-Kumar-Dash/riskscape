@@ -40,22 +40,19 @@ export async function GET(req: NextRequest) {
     city = addr.find((c: any) => c.types.includes("locality"))?.long_name ?? "Unknown";
     state = addr.find((c: any) => c.types.includes("administrative_area_level_1"))?.short_name ?? "Unknown";
 
-    // 🧩 Return a structure mimicking Google Solar API
-    const fakeSolarData = {
-      postalCode,
-      imageryDate: {
-        year: new Date().getFullYear(),
-        month: new Date().getMonth() + 1,
-        day: new Date().getDate()
-      },
-      solarPotential: {
-        maxSunshineHoursPerYear: parseFloat(sunshineHoursYear.toFixed(2)),
-        carbonOffsetFactorKgPerMwh: 850, // static value
-        wholeRoofStats: {
-          areaMeters2: avgTemp 
-        }
-      }
-    };
+const fakeSolarData = {
+  postalCode,
+  imageryDate: {
+    year: new Date().getFullYear(),
+    month: new Date().getMonth() + 1,
+    day: new Date().getDate()
+  },
+  solarPotential: {
+    maxSunshineHoursPerYear: parseFloat(sunshineHoursYear.toFixed(2)),
+    // Remove wholeRoofStats
+  },
+  avgTemperature: parseFloat(avgTemp.toFixed(2))
+};
 
     return NextResponse.json({
       solarData: fakeSolarData,
