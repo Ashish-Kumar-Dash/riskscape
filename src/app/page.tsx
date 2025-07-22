@@ -97,17 +97,17 @@ export default function HomePage() {
         }]);
 
         if (error) {
-          console.error('❌ Supabase insert failed:', error.message);
+          console.error(' Supabase insert failed:', error.message);
         } else {
-          console.log('✅ Assessment saved to Supabase');
+          console.log(' Assessment saved to Supabase');
         }
       } else {
         console.warn("Raw AI output:", json.raw);
-        setError("❌ AI could not parse a valid result.");
+        setError(" AI could not parse a valid result.");
       }
     } catch (error) {
       console.error("Error during risk assessment:", error);
-      setError("❌ Failed to fetch AI assessment.");
+      setError(" Failed to fetch AI assessment.");
     }
 
     setLoading(false);
@@ -131,18 +131,37 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-2xl font-bold mb-3 text-blue-800 flex items-center">
-              <span className="mr-2"></span> Solar & Environmental Data
-            </h2>
-            <p><strong> Location:</strong> {location}</p>
-            {solarData.imageryDate && (
-                <p><strong> Imagery Date:</strong> {`${solarData.imageryDate.year}-${solarData.imageryDate.month}-${solarData.imageryDate.day}`}</p>
-            )}
-            {solarData.solarPotential?.maxSunshineHoursPerYear && (
-                <p><strong>Max Sunshine Hours/Year:</strong> {solarData.solarPotential.maxSunshineHoursPerYear.toFixed(2)}</p>
-            )}
-            {pm25 !== null && <p><strong>💨 PM2.5 (μg/m³):</strong> {pm25.toFixed(2)}</p>}
-            {solarData.avgTemperature && <p><strong>🌡️ Avg Annual Temp (°C):</strong> {solarData.avgTemperature.toFixed(2)}</p>}
+        <div className="glass-card max-w-xl mx-auto mt-4 p-6 rounded-2xl shadow-lg backdrop-blur-sm bg-white/10 border border-white/20 text-white">
+  <h2 className="text-2xl font-bold mb-4"> Solar & Environmental Data</h2>
+  <p><strong>Location:</strong> {location}</p>
+
+  {solarData.imageryDate && (
+    <p>
+      <strong> Imagery Date:</strong>{" "}
+      {`${solarData.imageryDate.year}-${solarData.imageryDate.month}-${solarData.imageryDate.day}`}
+    </p>
+  )}
+
+  {solarData.solarPotential?.maxSunshineHoursPerYear && (
+    <p>
+      <strong> Max Sunshine Hours/Year:</strong>{" "}
+      {solarData.solarPotential.maxSunshineHoursPerYear.toFixed(2)}
+    </p>
+  )}
+
+  {pm25 !== null && (
+    <p>
+      <strong> PM2.5 (μg/m³):</strong> {pm25.toFixed(2)}
+    </p>
+  )}
+
+  {solarData.avgTemperature && (
+    <p>
+      <strong> Avg Annual Temp (°C):</strong>{" "}
+      {solarData.avgTemperature.toFixed(2)}
+    </p>
+  )}
+</div>
 
             <button
               onClick={assessRisk}

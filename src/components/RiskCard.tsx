@@ -1,41 +1,48 @@
-type Props = {
-  data: {
-    locationName: string;
-    air: any;
-    solar: any;
-  };
-};
+// components/RiskCard.tsx
+import { motion } from "framer-motion";
 
-export default function RiskCard({ data }: Props) {
-  const { locationName, air, solar } = data;
+export default function RiskCard({
+  result,
+}: {
+  result: {
+    riskTier: "Low" | "Medium" | "High";
+    explanation: string;
+    recommendations: string[];
+  };
+}) {
+  const getColor = (tier: string) => {
+    switch (tier) {
+      case "Low":
+        return "text-green-400 border-green-400";
+      case "Medium":
+        return "text-yellow-400 border-yellow-400";
+      case "High":
+        return "text-red-400 border-red-400";
+      default:
+        return "text-white border-white";
+    }
+  };
 
   return (
-    <div className="mt-6 p-4 bg-gray-100 rounded-xl shadow-md max-w-xl">
-      <h2 className="text-xl font-semibold mb-2">📍 {locationName}</h2>
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, type: "spring", stiffness: 60 }}
+      className={`max-w-md w-full mx-auto p-6 rounded-2xl border backdrop-blur-md bg-white/10 shadow-lg ${getColor(result.riskTier)}`}
+    >
+      <h2 className={`text-xl font-semibold mb-3 ${getColor(result.riskTier)}`}>
+        Climate Risk Assessment: <span className="underline">{result.riskTier}</span>
+      </h2>
+      <p className="text-sm text-white mb-4">{result.explanation}</p>
 
-      {air && (
-        <div>
-          <p className="text-sm font-medium">Air Quality Index: {air.aqi || "N/A"}</p>
-          <p className="text-sm text-gray-600">Category: {air.category || "N/A"}</p>
-        </div>
-      )}
-
-      {solar && (
-        <div className="mt-2">
-          {solar.message ? (
-            <p className="text-sm text-gray-600">{solar.message}</p>
-          ) : (
-            <>
-              <p className="text-sm font-medium">
-                ☀️ Sunshine Hours/Year: {solar.maxSunshineHoursPerYear || "N/A"}
-              </p>
-              <p className="text-sm text-gray-600">
-                🌡️ Avg Temperature (°C): {solar.wholeRoofStats?.areaMeters2?.toFixed(2) || "N/A"}
-              </p>
-            </>
-          )}
-        </div>
-      )}
-    </div>
+      <div className="mt-4">
+        <h3 className="text-white font-medium mb-2">Recommended Insurance:</h3>
+        <ul className="list-disc list-inside text-white">
+          {result.recommendations.map((rec, index) => (
+            <li key={index}>{rec}</li>
+          ))}
+        </ul>
+      </div>
+    </motion.div>
   );
 }
